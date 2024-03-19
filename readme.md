@@ -1,6 +1,9 @@
 Social Networking Kata
 ----------------------
 
+https://monospacedmonologues.com/2013/04/the-social-networking-kata/
+https://github.com/sandromancuso/social_networking_kata
+
 ### Scenarios
 
 **Posting**: Alice can publish messages to a personal timeline
