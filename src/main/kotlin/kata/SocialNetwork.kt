@@ -8,7 +8,7 @@ class SocialNetwork(
     private val posts: Posts,
     private val followers: Followers,
     private val printLine: (String) -> Unit,
-    private val clock: Clock,
+    private val clock: Clock
 ) {
 
     fun submitCommand(command: String) = when {
@@ -18,7 +18,7 @@ class SocialNetwork(
         else -> viewUserTimeline(command)
     }
 
-    private fun addPost(userName: String, message: String) = posts.add(userName, Post(message, now(clock)))
+    private fun addPost(userName: String, message: String) = posts.add(Post(userName, message, now(clock)))
 
     private fun addFollower(follower: String, followed: String) = followers.add(follower, followed)
 
@@ -28,11 +28,11 @@ class SocialNetwork(
     private fun viewWall(userName: String) {
         val users = followers.findFollowedBy(userName) + userName
         val posts = users.flatMap { user -> posts.findBy(user).map { Pair(user, it) } }
-        return posts.sortedByDescending { it.second.timestamp }.forEach { printLine(it.second.format(it.first)) }
+        return posts.sortedByDescending { it.second.timestamp }.forEach { printLine(it.second.format(true)) }
     }
 
-    private fun Post.format(userName: String? = null) =
-        Pair(Duration.between(now(clock), timestamp), userName?.let { "$userName - " } ?: "")
+    private fun Post.format(showUser: Boolean = false) =
+        Pair(Duration.between(now(clock), timestamp), if (showUser) "${this.username} - " else "")
             .let { (elapsedTime, user) ->
                 when {
                     elapsedTime.toMinutes() < 1L -> "$user$message (${elapsedTime.seconds} seconds ago)"
