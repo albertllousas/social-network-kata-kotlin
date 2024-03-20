@@ -1,7 +1,6 @@
 package kata
 
 import java.time.Clock
-import java.time.Duration
 import java.time.LocalDateTime.now
 
 class SocialNetwork(
@@ -9,7 +8,7 @@ class SocialNetwork(
     private val followers: Followers,
     private val printLine: (String) -> Unit,
     private val clock: Clock,
-    private val format: (post: Post, clock: Clock, showUser: Boolean) -> String = ::formatPost
+    private val format: (post: Post, clock: Clock, showUser: Boolean) -> String = PostFormatter::format
 ) {
 
     fun submitCommand(command: String) = when {
@@ -32,13 +31,3 @@ class SocialNetwork(
         return posts.sortedByDescending { it.second.timestamp }.forEach { printLine(format(it.second, clock, true)) }
     }
 }
-
-fun formatPost(post: Post, clock: Clock, showUser: Boolean = false) =
-    Pair(Duration.between(now(clock), post.timestamp), if (showUser) "${post.username} - " else "")
-        .let { (elapsedTime, user) ->
-            when {
-                elapsedTime.toMinutes() < 1L -> "$user${post.message} (${elapsedTime.seconds} seconds ago)"
-                elapsedTime.toMinutes() == 1L -> "$user${post.message} (1 minute ago)"
-                else -> "$user${post.message} (${elapsedTime.toMinutes()} minutes ago)"
-            }
-        }
