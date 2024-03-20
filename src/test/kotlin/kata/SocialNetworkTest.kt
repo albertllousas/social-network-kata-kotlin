@@ -6,7 +6,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Instant
-import java.time.LocalDateTime
+import java.time.LocalDateTime.parse
 import java.time.ZoneId
 
 class SocialNetworkTest {
@@ -25,14 +25,14 @@ class SocialNetworkTest {
     fun `should publish messages to a personal timeline`() {
         network.submitCommand("Alice -> I love the weather today")
 
-        verify { posts.add("Alice", Post("I love the weather today", LocalDateTime.parse("2007-12-03T10:15:30"))) }
+        verify { posts.add("Alice", Post("I love the weather today", parse("2007-12-03T10:15:30"))) }
     }
 
     @Test
     fun `should view user's timeline`() {
         every {
             posts.findBy("Alice")
-        } returns listOf(Post("I love the weather today", LocalDateTime.parse("2007-12-03T10:20:30")))
+        } returns listOf(Post("I love the weather today", parse("2007-12-03T10:20:30")))
 
         network.submitCommand("Alice")
 
@@ -44,8 +44,8 @@ class SocialNetworkTest {
         every {
             posts.findBy("Bob")
         } returns listOf(
-            Post("Damn! We lost!", LocalDateTime.parse("2007-12-03T10:17:45")),
-            Post("Good game though", LocalDateTime.parse("2007-12-03T10:16:35"))
+            Post("Damn! We lost!", parse("2007-12-03T10:17:45")),
+            Post("Good game though", parse("2007-12-03T10:16:35"))
         )
 
         network.submitCommand("Bob")
@@ -61,5 +61,33 @@ class SocialNetworkTest {
         network.submitCommand("Charlie follows Alice")
 
         verify { followers.add(follower = "Charlie", followed = "Alice") }
+    }
+
+    @Test
+    fun `should view an aggregated list of all subscriptions`() {
+        every {
+           followers.findFollowedBy("Charlie")
+        } returns listOf("Alice", "Bob")
+        every {
+            posts.findBy("Alice")
+        } returns listOf(Post("I love the weather today", parse("2007-12-03T10:20:30")))
+        every {
+            posts.findBy("Bob")
+        } returns listOf(
+            Post("Damn! We lost!", parse("2007-12-03T10:17:45")),
+            Post("Good game though", parse("2007-12-03T10:16:35"))
+        )
+        every {
+            posts.findBy("Charlie")
+        } returns listOf(Post("I'm in New York today! Anyone wants to have a coffee?", parse("2007-12-03T10:15:45")))
+
+        network.submitCommand("Charlie wall")
+
+        verify {
+            printLine("Charlie - I'm in New York today! Anyone wants to have a coffee? (15 seconds ago)")
+            printLine("Bob - Good game though (1 minute ago)")
+            printLine("Bob - Damn! We lost! (2 minutes ago)")
+            printLine("Alice - I love the weather today (5 minutes ago)")
+        }
     }
 }
