@@ -4,14 +4,10 @@ import java.time.Clock
 import java.time.Duration
 import java.time.LocalDateTime.now
 
-interface Console {
-    fun printLine(message: String)
-}
-
 class SocialNetwork(
     private val posts: Posts,
     private val followers: Followers,
-    private val console: Console,
+    private val printLine: (String) -> Unit ,
     private val clock: Clock
 ) {
 
@@ -26,7 +22,7 @@ class SocialNetwork(
     private fun addFollower(follower: String, followed: String) = followers.add(follower, followed)
 
     private fun viewUserTimeline(userName: String) =
-        posts.findBy(userName).sortedByDescending { it.timestamp }.forEach { console.printLine(it.format()) }
+        posts.findBy(userName).sortedByDescending { it.timestamp }.forEach { printLine(it.format()) }
 
     private fun Post.format(): String {
         val minutesAgo = Duration.between(now(clock), timestamp).toMinutes()

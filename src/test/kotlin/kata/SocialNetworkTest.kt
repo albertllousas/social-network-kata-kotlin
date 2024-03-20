@@ -15,11 +15,11 @@ class SocialNetworkTest {
 
     private val followers = mockk<Followers>(relaxed = true)
 
-    private val console = mockk<Console>(relaxed = true)
+    private val printLine = mockk<(String) -> Unit>(relaxed = true)
 
     private val clock = Clock.fixed(Instant.parse("2007-12-03T10:15:30Z"), ZoneId.of("UTC"))
 
-    private val network = SocialNetwork(posts, followers, console, clock)
+    private val network = SocialNetwork(posts, followers, printLine, clock)
 
     @Test
     fun `should publish messages to a personal timeline`() {
@@ -36,7 +36,7 @@ class SocialNetworkTest {
 
         network.submitCommand("Alice")
 
-        verify { console.printLine("I love the weather today (5 minutes ago)") }
+        verify { printLine("I love the weather today (5 minutes ago)") }
     }
 
     @Test
@@ -51,8 +51,8 @@ class SocialNetworkTest {
         network.submitCommand("Bob")
 
         verify {
-            console.printLine("Good game though (1 minute ago)")
-            console.printLine("Damn! We lost! (2 minutes ago)")
+            printLine("Good game though (1 minute ago)")
+            printLine("Damn! We lost! (2 minutes ago)")
         }
     }
 
