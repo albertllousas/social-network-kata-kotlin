@@ -8,7 +8,8 @@ class SocialNetwork(
     private val posts: Posts,
     private val followers: Followers,
     private val printLine: (String) -> Unit,
-    private val clock: Clock
+    private val clock: Clock,
+    private val format: (post: Post, clock: Clock, showUser: Boolean) -> String = ::formatPost
 ) {
 
     fun submitCommand(command: String) = when {
@@ -23,21 +24,21 @@ class SocialNetwork(
     private fun addFollower(follower: String, followed: String) = followers.add(follower, followed)
 
     private fun viewUserTimeline(userName: String) =
-        posts.findBy(userName).sortedByDescending { it.timestamp }.forEach { printLine(it.format()) }
+        posts.findBy(userName).sortedByDescending { it.timestamp }.forEach { printLine(format(it, clock, false)) }
 
     private fun viewWall(userName: String) {
         val users = followers.findFollowedBy(userName) + userName
         val posts = users.flatMap { user -> posts.findBy(user).map { Pair(user, it) } }
-        return posts.sortedByDescending { it.second.timestamp }.forEach { printLine(it.second.format(true)) }
+        return posts.sortedByDescending { it.second.timestamp }.forEach { printLine(format(it.second, clock, true)) }
     }
-
-    private fun Post.format(showUser: Boolean = false) =
-        Pair(Duration.between(now(clock), timestamp), if (showUser) "${this.username} - " else "")
-            .let { (elapsedTime, user) ->
-                when {
-                    elapsedTime.toMinutes() < 1L -> "$user$message (${elapsedTime.seconds} seconds ago)"
-                    elapsedTime.toMinutes() == 1L -> "$user$message (1 minute ago)"
-                    else -> "$user$message (${elapsedTime.toMinutes()} minutes ago)"
-                }
-            }
 }
+
+fun formatPost(post: Post, clock: Clock, showUser: Boolean = false) =
+    Pair(Duration.between(now(clock), post.timestamp), if (showUser) "${post.username} - " else "")
+        .let { (elapsedTime, user) ->
+            when {
+                elapsedTime.toMinutes() < 1L -> "$user${post.message} (${elapsedTime.seconds} seconds ago)"
+                elapsedTime.toMinutes() == 1L -> "$user${post.message} (1 minute ago)"
+                else -> "$user${post.message} (${elapsedTime.toMinutes()} minutes ago)"
+            }
+        }
