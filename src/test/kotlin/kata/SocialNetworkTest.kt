@@ -57,7 +57,7 @@ class SocialNetworkTest {
     }
 
     @Test
-    fun `should allow a user subscribe to another user timeline`() {
+    fun `should allow a user to subscribe to another user timeline`() {
         network.submitCommand("Charlie follows Alice")
 
         verify { followers.add(follower = "Charlie", followed = "Alice") }

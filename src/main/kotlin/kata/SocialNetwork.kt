@@ -15,17 +15,18 @@ class SocialNetwork(
     private val clock: Clock
 ) {
 
-    fun submitCommand(command: String) {
-        if (command.contains(" -> ")) {
-            val (userName, msg) = command.split(" -> ")
-            posts.add(userName, Post(msg, now(clock)))
-        } else if (command.contains(" follows ")) {
-            val (follower, followed) = command.split(" follows ")
-            followers.add(follower, followed)
-        } else {
-            posts.findBy(command).sortedByDescending { it.timestamp }.forEach { console.printLine(it.format()) }
-        }
+    fun submitCommand(command: String) = when {
+        command.contains(" -> ") -> command.split(" -> ").let { addPost(it[0], it[1]) }
+        command.contains(" follows ") -> command.split(" follows ").let { addFollower(it[0], it[1]) }
+        else -> viewUserTimeline(command)
     }
+
+    private fun addPost(userName: String, message: String) = posts.add(userName, Post(message, now(clock)))
+
+    private fun addFollower(follower: String, followed: String) = followers.add(follower, followed)
+
+    private fun viewUserTimeline(userName: String) =
+        posts.findBy(userName).sortedByDescending { it.timestamp }.forEach { console.printLine(it.format()) }
 
     private fun Post.format(): String {
         val minutesAgo = Duration.between(now(clock), timestamp).toMinutes()
