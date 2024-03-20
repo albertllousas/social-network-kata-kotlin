@@ -23,15 +23,7 @@ class SocialNetworkTest {
     fun `should publish messages to a personal timeline`() {
         network.submitCommand("Alice -> I love the weather today")
 
-        verify {
-            posts.add(
-                userName = "Alice",
-                post = Post(
-                    message = "I love the weather today",
-                    timestamp = LocalDateTime.parse("2007-12-03T10:15:30")
-                )
-            )
-        }
+        verify { posts.add("Alice", Post("I love the weather today", LocalDateTime.parse("2007-12-03T10:15:30"))) }
     }
 
     @Test
@@ -43,5 +35,22 @@ class SocialNetworkTest {
         network.submitCommand("Alice")
 
         verify { console.printLine("I love the weather today (5 minutes ago)") }
+    }
+
+    @Test
+    fun `should view user's timeline with multiple messages`() {
+        every {
+            posts.findBy("Bob")
+        } returns listOf(
+            Post("Damn! We lost!", LocalDateTime.parse("2007-12-03T10:17:45")),
+            Post("Good game though", LocalDateTime.parse("2007-12-03T10:16:35"))
+        )
+
+        network.submitCommand("Bob")
+
+        verify {
+            console.printLine("Good game though (1 minute ago)")
+            console.printLine("Damn! We lost! (2 minutes ago)")
+        }
     }
 }
