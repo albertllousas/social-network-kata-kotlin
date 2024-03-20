@@ -8,12 +8,20 @@ interface Console {
     fun printLine(message: String)
 }
 
-class SocialNetwork(private val posts: Posts, private val console: Console, private val clock: Clock) {
+class SocialNetwork(
+    private val posts: Posts,
+    private val followers: Followers,
+    private val console: Console,
+    private val clock: Clock
+) {
 
     fun submitCommand(command: String) {
         if (command.contains(" -> ")) {
             val (userName, msg) = command.split(" -> ")
             posts.add(userName, Post(msg, now(clock)))
+        } else if (command.contains(" follows ")) {
+            val (follower, followed) = command.split(" follows ")
+            followers.add(follower, followed)
         } else {
             posts.findBy(command).sortedByDescending { it.timestamp }.forEach { console.printLine(it.format()) }
         }
@@ -21,7 +29,7 @@ class SocialNetwork(private val posts: Posts, private val console: Console, priv
 
     private fun Post.format(): String {
         val minutesAgo = Duration.between(now(clock), timestamp).toMinutes()
-        return if(minutesAgo <= 1L) return "$message (1 minute ago)"
+        return if (minutesAgo <= 1L) return "$message (1 minute ago)"
         else "$message ($minutesAgo minutes ago)"
     }
 }

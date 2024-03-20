@@ -13,11 +13,13 @@ class SocialNetworkTest {
 
     private val posts = mockk<Posts>(relaxed = true)
 
+    private val followers = mockk<Followers>(relaxed = true)
+
     private val console = mockk<Console>(relaxed = true)
 
     private val clock = Clock.fixed(Instant.parse("2007-12-03T10:15:30Z"), ZoneId.of("UTC"))
 
-    private val network = SocialNetwork(posts, console, clock)
+    private val network = SocialNetwork(posts, followers, console, clock)
 
     @Test
     fun `should publish messages to a personal timeline`() {
@@ -52,5 +54,12 @@ class SocialNetworkTest {
             console.printLine("Good game though (1 minute ago)")
             console.printLine("Damn! We lost! (2 minutes ago)")
         }
+    }
+
+    @Test
+    fun `should allow a user subscribe to another user timeline`() {
+        network.submitCommand("Charlie follows Alice")
+
+        verify { followers.add(follower = "Charlie", followed = "Alice") }
     }
 }
