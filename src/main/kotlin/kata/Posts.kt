@@ -2,10 +2,9 @@ package kata
 
 import java.time.LocalDateTime
 
-class Posts {
-    fun add(userName: String, post: Post) {
-        TODO("Not yet implemented")
-    }
+interface Posts {
+    fun add(userName: String, post: Post)
+    fun findBy(userName: String): List<Post>
 }
 
 data class Post(val message: String, val timestamp: LocalDateTime)
