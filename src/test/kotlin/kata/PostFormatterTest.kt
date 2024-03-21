@@ -14,9 +14,9 @@ class PostFormatterTest {
 
     @TestFactory
     fun `formatting posts`() = listOf(
-        Triple(Post("Alice", "Hello!", parse("2007-12-03T10:15:32")), false, "Hello! (2 seconds ago)"),
-        Triple(Post("Alice", "Hello!", parse("2007-12-03T10:15:32")), true, "Alice - Hello! (2 seconds ago)"),
-        Triple(Post("Bob", "Damn!", parse("2007-12-03T10:17:45")), true, "Bob - Damn! (2 minutes ago)")
+        Triple(Post("Alice", "Hello!", parse("2007-12-03T10:15:28")), false, "Hello! (2 seconds ago)"),
+        Triple(Post("Alice", "Hello!", parse("2007-12-03T10:15:28")), true, "Alice - Hello! (2 seconds ago)"),
+        Triple(Post("Bob", "Damn!", parse("2007-12-03T10:13:25")), true, "Bob - Damn! (2 minutes ago)")
     ).map { (post, showUser, expected) ->
         dynamicTest("should format a post") {
             PostFormatter.format(post, clock, showUser) shouldBe expected

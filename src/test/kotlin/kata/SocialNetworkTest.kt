@@ -32,7 +32,7 @@ class SocialNetworkTest {
     fun `should view user's timeline`() {
         every {
             posts.findBy("Alice")
-        } returns listOf(Post("Alice", "I love the weather today", parse("2007-12-03T10:20:30")))
+        } returns listOf(Post("Alice", "I love the weather today", parse("2007-12-03T10:10:05")))
 
         network.submitCommand("Alice")
 
@@ -44,8 +44,8 @@ class SocialNetworkTest {
         every {
             posts.findBy("Bob")
         } returns listOf(
-            Post("Bob", "Damn! We lost!", parse("2007-12-03T10:17:45")),
-            Post("Bob", "Good game though", parse("2007-12-03T10:16:35"))
+            Post("Bob", "Damn! We lost!", parse("2007-12-03T10:13:10")),
+            Post("Bob", "Good game though", parse("2007-12-03T10:14:01"))
         )
 
         network.submitCommand("Bob")
@@ -70,16 +70,16 @@ class SocialNetworkTest {
         } returns listOf("Alice", "Bob")
         every {
             posts.findBy("Alice")
-        } returns listOf(Post("Alice", "I love the weather today", parse("2007-12-03T10:20:30")))
+        } returns listOf(Post("Alice", "I love the weather today", parse("2007-12-03T10:10:30")))
         every {
             posts.findBy("Bob")
         } returns listOf(
-            Post("Bob", "Damn! We lost!", parse("2007-12-03T10:17:45")),
-            Post("Bob", "Good game though", parse("2007-12-03T10:16:35"))
+            Post("Bob", "Damn! We lost!", parse("2007-12-03T10:13:00")),
+            Post("Bob", "Good game though", parse("2007-12-03T10:14:05"))
         )
         every {
             posts.findBy("Charlie")
-        } returns listOf(Post("Charlie", "I'm in New York today! Anyone wants to have a coffee?", parse("2007-12-03T10:15:45")))
+        } returns listOf(Post("Charlie", "I'm in New York today! Anyone wants to have a coffee?", parse("2007-12-03T10:15:15")))
 
         network.submitCommand("Charlie wall")
 
