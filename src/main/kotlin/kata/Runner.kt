@@ -19,7 +19,6 @@ fun main(args: Array<String>) {
 
     while(true) {
         print("> ")
-        readlnOrNull()?.let(socialNetwork::submitCommand)
         val input = readlnOrNull()
         if (input.equals("quit")) break
         else if (input != null)socialNetwork.submitCommand(input)
